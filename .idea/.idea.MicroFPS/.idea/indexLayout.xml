@@ -25,6 +25,7 @@
       <Path>../../ml-agents-release_10/com.unity.ml-agents</Path>
     </explicitIncludes>
     <explicitExcludes>
+      <Path>.git</Path>
       <Path>.idea</Path>
       <Path>Library</Path>
       <Path>Logs</Path>

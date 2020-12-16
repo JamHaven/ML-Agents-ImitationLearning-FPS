@@ -597,14 +597,14 @@ private void FixedUpdate()
             if (autonomus)
             {
                 i = GetMlAxisRaw(mouseInputName);
-                Debug.Log("Mouse input in InputHandler: " + i);
+                //Debug.Log("Mouse input in InputHandler: " + i);
             }
             else
             {
                 // Check if this look input is coming from the mouse
                 isGamepad = Input.GetAxis(stickInputName) != 0f;
                 i = isGamepad ? Input.GetAxis(stickInputName) : Input.GetAxisRaw(mouseInputName);
-                Debug.Log("Mouse input in InputHandler (non autonomous): " + i);
+                //Debug.Log("Mouse input in InputHandler (non autonomous): " + i);
                 
             }
 

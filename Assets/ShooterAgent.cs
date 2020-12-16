@@ -63,9 +63,10 @@ public class ShooterAgent : Unity.MLAgents.Agent
         
         //Agent velocity
         //sensor.AddObservation(autonomusPlayerController.characterVelocity);
-        sensor.AddObservation(gameObject.transform.localPosition.x);
-        sensor.AddObservation(gameObject.transform.localPosition.y);
-        sensor.AddObservation(gameObject.transform.localPosition.z);
+        var localPosition = gameObject.transform.localPosition;
+        sensor.AddObservation(localPosition.x);
+        sensor.AddObservation(localPosition.y);
+        sensor.AddObservation(localPosition.z);
         sensor.AddObservation(gameObject.transform.rotation.y);
         sensor.AddObservation(m_playerCharacterController.playerCamera.transform.rotation.x);
         sensor.AddObservation(playerWeaponsManager.GetWeaponAtSlotIndex(playerWeaponsManager.activeWeaponIndex).m_CurrentAmmo);
@@ -97,13 +98,13 @@ public class ShooterAgent : Unity.MLAgents.Agent
         }
         
         currentTime += Time.deltaTime;
-        SetReward(-0.001f);
+        AddReward(-0.001f);
         //If all objectives are done the episode ends
         if (objectiveManager.AreAllObjectivesCompleted())
         {
             objectiveCompletedCount += 1;
             statsRecorder.Add("Agent/objectiveCompleted", objectiveCompletedCount);
-            SetReward(3f);
+            AddReward(3f);
             Debug.Log("Current Reward:" +GetCumulativeReward());
             EndEpisode();
         }
@@ -126,14 +127,14 @@ public class ShooterAgent : Unity.MLAgents.Agent
         Debug.Log("Hit reward!");
         enemeyHitCount += 1;
         statsRecorder.Add("Agent/EnemeiesHit", enemeyHitCount);
-        SetReward(1f);
+        AddReward(0.1f);
         Debug.Log("Current Reward:" +GetCumulativeReward());
     }
 
     private void OnDie()
     {
         //Debug.Log("Player Died!");
-        SetReward(-0.2f);
+        AddReward(-1f);
         Debug.Log("Current Reward:" +GetCumulativeReward());
         EndEpisode();
     }
@@ -156,10 +157,12 @@ public class ShooterAgent : Unity.MLAgents.Agent
         healthManager.m_IsDead = false;
         m_playerCharacterController.isDead = false;
 
-        m_playerCharacterController.transform.localPosition = playerSpawn.transform.localPosition;
-        transform.localPosition = playerSpawn.transform.localPosition;
-        //playerCamera.transform.eulerAngles = new Vector3(0,0,0);
-        //transform.eulerAngles = new Vector3(0,436,0);
+        Debug.Log(" Poistion vor respawn: " + gameObject.transform.localPosition);
+        var localPosition = playerSpawn.transform.localPosition;
+        m_playerCharacterController.transform.localPosition = localPosition;
+        gameObject.transform.localPosition = localPosition;
+        Debug.Log("Poistion vor respawn: " + gameObject.transform.localPosition);
+        
         transform.rotation = Quaternion.Euler(0,436,0);
         m_playerCharacterController.m_CameraVerticalAngle = 0f;
         //playerCamera.transform.rotation = Quaternion.Euler(0,0,0);
@@ -295,8 +298,8 @@ public class ShooterAgent : Unity.MLAgents.Agent
             continousActions[6] = -1;
         }
 
-        continousActions[7] = Input.GetAxisRaw("Mouse X")*0.4f;
-        continousActions[8] = Input.GetAxisRaw("Mouse Y")*0.4f;
+        continousActions[7] = Input.GetAxisRaw("Mouse X");
+        continousActions[8] = Input.GetAxisRaw("Mouse Y");
 
         //****Continous End******
 

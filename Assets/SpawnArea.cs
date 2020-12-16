@@ -8,7 +8,8 @@ public class SpawnArea : MonoBehaviour
     public GameObject enemyToSpawn;
     public int enemiesToSpawn;
     public EnemyManager enemyManager;
-
+    public GameObject parentToSpawn;
+    
     // Start is called before the first frame update
     void Start()
     {/*
@@ -47,7 +48,8 @@ public class SpawnArea : MonoBehaviour
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             Vector3 randomCoordinate = GenerateRandomPoint();
-            Instantiate(enemyToSpawn, randomCoordinate, Quaternion.identity);
+            GameObject tempEnemy = Instantiate(enemyToSpawn, randomCoordinate, Quaternion.identity);
+            tempEnemy.transform.SetParent(parentToSpawn.transform);
         }
     }
 }

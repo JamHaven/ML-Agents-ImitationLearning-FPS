@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2620131183356007197}
   - component: {fileID: 2620131183356007194}
   - component: {fileID: 2620131183356007195}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Pickup_Health
   m_TagString: Untagged
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 4508236271983282889}
   - component: {fileID: 315378132123456746}
   - component: {fileID: 4809908688896618212}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: VFX_Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4940,7 +4940,7 @@ GameObject:
   - component: {fileID: 6937867885679790262}
   - component: {fileID: 8405065647102701556}
   - component: {fileID: 3683820420529400970}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: VFX_HealthGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9831,7 +9831,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 93b1ab0ae86bdf7459bbdf258c9dec49, type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 93b1ab0ae86bdf7459bbdf258c9dec49, type: 3}
       propertyPath: m_LocalPosition.x
