@@ -4433,19 +4433,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 7
-    NumStackedVectorObservations: 1
-    VectorActionSize: 09000000
+    VectorObservationSize: 8
+    NumStackedVectorObservations: 2
+    m_ActionSpec:
+      m_NumContinuousActions: 5
+      BranchSizes: 
+    VectorActionSize: 05000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 0}
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 5022602860645237092, guid: a9330ed10c235eb4790dbee2f42b80be, type: 3}
   m_InferenceDevice: 1
   m_BehaviorType: 0
   m_BehaviorName: Shooter
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
-  m_ObservableAttributeHandling: 0
+  m_ObservableAttributeHandling: 1
 --- !u!114 &2729281214152228938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4485,8 +4489,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 1000
-  DemonstrationName: ShooterDemo2
+  NumStepsToRecord: 0
+  DemonstrationName: ShooterV3_demo0
   DemonstrationDirectory: 
 --- !u!114 &2729281214152228940
 MonoBehaviour:
@@ -5203,7 +5207,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4803731618746914691}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!1001 &2729281214462286338
 PrefabInstance:
   m_ObjectHideFlags: 0

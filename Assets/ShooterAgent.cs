@@ -38,6 +38,7 @@ public class ShooterAgent : Unity.MLAgents.Agent
     private  StatsRecorder statsRecorder;
     private List<Health> currentEnemyHealthArray;
 
+    private int episodeCount = 0;
     private int enemeyHitCount = 0;
     private int enemyKillCount = 0;
     private int objectiveCompletedCount = 0;
@@ -69,8 +70,9 @@ public class ShooterAgent : Unity.MLAgents.Agent
         sensor.AddObservation(localPosition.z);
         sensor.AddObservation(gameObject.transform.rotation.y);
         sensor.AddObservation(m_playerCharacterController.playerCamera.transform.rotation.x);
-        sensor.AddObservation(playerWeaponsManager.GetWeaponAtSlotIndex(playerWeaponsManager.activeWeaponIndex).m_CurrentAmmo);
-        sensor.AddObservation(healthManager.currentHealth);
+        sensor.AddObservation(playerWeaponsManager.GetWeaponAtSlotIndex(playerWeaponsManager.activeWeaponIndex).m_CurrentAmmo / playerWeaponsManager.GetWeaponAtSlotIndex(playerWeaponsManager.activeWeaponIndex).maxAmmo); //Added as of 19.1.2021: Normalised Input
+        sensor.AddObservation(healthManager.currentHealth / healthManager.maxHealth); //Added as of 19.1.2021: Normalised Input
+        sensor.AddObservation(playerWeaponsManager.isPointingAtEnemy); //Added as of 18.01.2021 to help the AI detect if they will hit an enemy
         //Monitor Health
         //sensor.AddObservation(healthManager.currentHealth);
         //sensor.AddObservation(healthManager.maxHealth);
@@ -83,6 +85,33 @@ public class ShooterAgent : Unity.MLAgents.Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
+        float distanceToSpawn = Vector3.Distance(playerSpawn.transform.position, transform.position);
+        //Debug.Log(distanceToSpawn);
+        if (distanceToSpawn >= 40f)
+        {
+            //Debug.Log("Furthest Reward.");
+            AddReward(0.0008f);
+        }
+        else if (distanceToSpawn >= 25f)
+        {
+            //Debug.Log("3nd Nearest Reward.");
+            AddReward(0.0006f);
+        }
+        else if (distanceToSpawn >= 10f)
+        {
+            //Debug.Log("2nd Nearest Reward.");
+            AddReward(0.0004f);
+        }
+        else if (distanceToSpawn >= 4)
+        {
+            //Debug.Log("Nearest Reward.");
+            AddReward(0.0002f);
+        }
+        //Debug.Log("Current Reward:" +GetCumulativeReward());
+        if (playerWeaponsManager.isPointingAtEnemy)
+        {
+            AddReward(0.001f); //Added if 19.1.2020: Keeping aim at enemy --> good
+        }
         if (currentEnemyHealthArray.Count == 0)
         {
             int i = 0;
@@ -105,7 +134,7 @@ public class ShooterAgent : Unity.MLAgents.Agent
             objectiveCompletedCount += 1;
             statsRecorder.Add("Agent/objectiveCompleted", objectiveCompletedCount);
             AddReward(3f);
-            Debug.Log("Current Reward:" +GetCumulativeReward());
+            //Debug.Log("Current Reward:" +GetCumulativeReward());
             EndEpisode();
         }
 
@@ -117,51 +146,62 @@ public class ShooterAgent : Unity.MLAgents.Agent
 
         if(transform.position.y < killHeight)
         {
-            OnDie();
+            OnDie(gameObject);
         }
         
     }
 
     private void RewardForHit(float damage, GameObject damageSource)
     {
-        Debug.Log("Hit reward!");
-        enemeyHitCount += 1;
-        statsRecorder.Add("Agent/EnemeiesHit", enemeyHitCount);
-        AddReward(0.1f);
-        Debug.Log("Current Reward:" +GetCumulativeReward());
+        //Debug.Log("Hit reward!");
+        if (damageSource == gameObject)
+        {
+            //Debug.Log("Enemy hit by player!");
+            enemeyHitCount += 1;
+            statsRecorder.Add("Agent/EnemeiesHit", enemeyHitCount);
+            AddReward(0.1f);
+        }
+
+        //Debug.Log("Current Reward:" +GetCumulativeReward());
     }
 
-    private void OnDie()
+    private void OnDie(GameObject damageSource)
     {
         //Debug.Log("Player Died!");
         AddReward(-1f);
-        Debug.Log("Current Reward:" +GetCumulativeReward());
+        //Debug.Log("Current Reward:" +GetCumulativeReward());
         EndEpisode();
     }
 
-    private void OnEnemyDeath()
+    private void OnEnemyDeath(GameObject damageSource)
     {
-        Debug.Log("Killed an enemy!");
-        enemyKillCount += 1;
-        statsRecorder.Add("Agent/EnemiesKilled", enemyKillCount);
-        SetReward(1f);
-        Debug.Log("Current Reward:" +GetCumulativeReward());
+        if (damageSource == gameObject)
+        {
+            //Debug.Log("Player killed an enemy!");
+            enemyKillCount += 1;
+            statsRecorder.Add("Agent/EnemiesKilled", enemyKillCount);
+            SetReward(1f);
+        }
+
+        //Debug.Log("Current Reward:" +GetCumulativeReward());
     }
 
 
     public override void OnEpisodeBegin()
-    {    
+    {
+        episodeCount += 1;
+        Debug.Log(episodeCount);
         currentTime = 0f;
         //Reset Player --> Health, Position, Velocity
         healthManager.currentHealth = healthManager.maxHealth;
         healthManager.m_IsDead = false;
         m_playerCharacterController.isDead = false;
 
-        Debug.Log(" Poistion vor respawn: " + gameObject.transform.localPosition);
+        //Debug.Log(" Poistion vor respawn: " + gameObject.transform.localPosition);
         var localPosition = playerSpawn.transform.localPosition;
         m_playerCharacterController.transform.localPosition = localPosition;
         gameObject.transform.localPosition = localPosition;
-        Debug.Log("Poistion vor respawn: " + gameObject.transform.localPosition);
+        //Debug.Log("Poistion vor respawn: " + gameObject.transform.localPosition);
         
         transform.rotation = Quaternion.Euler(0,436,0);
         m_playerCharacterController.m_CameraVerticalAngle = 0f;
@@ -215,13 +255,13 @@ public class ShooterAgent : Unity.MLAgents.Agent
         var continousActions = actionsOut.ContinuousActions;
         continousActions[0] = 0;
         continousActions[1] = 0;
+        //continousActions[2] = 0; Commented out as of 18.01.2020 to reduce inputs
+        //continousActions[3] = 0; Commented out as of 18.01.2020 to reduce inputs
         continousActions[2] = 0;
+        //continousActions[5] = 0; Commented out as of 18.01.2020 to reduce inputs
+        //continousActions[6] = 0; Commented out as of 18.01.2020 to reduce inputs
         continousActions[3] = 0;
         continousActions[4] = 0;
-        continousActions[5] = 0;
-        continousActions[6] = 0;
-        continousActions[7] = 0;
-        continousActions[8] = 0;
         
         //Move Horizontal
         if (Input.GetKey(KeyCode.D))
@@ -252,7 +292,7 @@ public class ShooterAgent : Unity.MLAgents.Agent
             continousActions[1] = 0;
         }
         
-        //Jump
+        /* Commented out as of 18.01.2020 to reduce inputs //Jump
         if (Input.GetKey(KeyCode.Space))
         {
             continousActions[2] = 1;
@@ -260,46 +300,47 @@ public class ShooterAgent : Unity.MLAgents.Agent
         else
         {
             continousActions[2] = -1;
-        }
+        }*/
 
-        //Crouch
+        /* Commented out as of 18.01.2020 to reduce inputs//Crouch
         if (Input.GetKey(KeyCode.C))
         {
             continousActions[3] = 1;
         }else
         {
             continousActions[3] = -1;
-        }
+        }*/
 
         //Fire
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            continousActions[4] = 1;
+            continousActions[2] = 1;
         }else
         {
-            continousActions[4] = -1;
+            continousActions[2] = -1;
         }
         
-        //Aim
+        /* Commented out as of 18.01.2020 to reduce inputs //Aim
         if (Input.GetKey(KeyCode.Mouse1))
         {
             continousActions[5] = 1;
         }else
         {
             continousActions[5] = -1;
-        }
+        }*/
         
-        //Sprint
+        /* Commented out as of 18.01.2020 to reduce inputs //Sprint
         if (Input.GetKey(KeyCode.LeftShift))
         {
             continousActions[6] = 1;
         }else
         {
             continousActions[6] = -1;
-        }
-
-        continousActions[7] = Input.GetAxisRaw("Mouse X");
-        continousActions[8] = Input.GetAxisRaw("Mouse Y");
+        }*/
+        continousActions[3] = Mathf.Clamp(Input.GetAxisRaw("Mouse X"), -1f, 1f);
+        continousActions[4] = Mathf.Clamp(Input.GetAxisRaw("Mouse Y"), -1f, 1f);
+        //continousActions[3] = Input.GetAxisRaw("Mouse X");
+        //continousActions[4] = Input.GetAxisRaw("Mouse Y");
 
         //****Continous End******
 

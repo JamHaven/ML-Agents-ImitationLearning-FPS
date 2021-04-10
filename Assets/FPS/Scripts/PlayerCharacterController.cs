@@ -185,12 +185,12 @@ public class PlayerCharacterController : MonoBehaviour
             SetCrouchingState(!isCrouching, false);
         }
 
-        UpdateCharacterHeight(false);
+        UpdateCharacterHeight(true);
 
         HandleCharacterMovement();
     }
 
-    void OnDie()
+    void OnDie(GameObject damageSource)
     {
         
         //isDead = true;

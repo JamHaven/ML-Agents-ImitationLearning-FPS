@@ -29,11 +29,13 @@ public class PlayerInputHandler : MonoBehaviour
     float mouseVertical = 0; //TODO
     float mouseHorizontal = 0; //TODO
     float verticalMove = 0; // Keyboard will always use -1, 0 or 1
-    bool sprintButton; // 0 - false, 1 - true
+#pragma warning disable 649
+    bool sprintButton; // 0 - false, 1 - truea
     bool jumpButton; // 0 - false, 1 - true
     bool fireButton; // 0 - false, 1 - true
     bool aimButton; // 0 - false, 1 - true
     bool crouchButton; // 0 - false, 1 - true
+#pragma warning restore 649
     
     private void Start()
     {
@@ -54,34 +56,39 @@ private void FixedUpdate()
             float tempAction;
             //**** CONTINOUS *****
             //Movement Horizontal
-            tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[0], -1f, 1f);
-            if (tempAction > 0)
+            //Debug.Log(m_ActionBuffers.ContinuousActions[0]);
+            tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[0], -1f, 1f);  
+            if (tempAction > 0.33)
             {
                 horizontalMove = 1;
-            }else if(tempAction < 0)
+            }else if(tempAction < -0.33)
             {
                 horizontalMove = -1;
             }
-            else
+            else // >= -0.33 && <= 0.33
             {
+                //Debug.Log("No movement left/right");
                 horizontalMove = 0;
             }
             
             //Movement Vertical
             tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[1], -1f, 1f);
-            if (tempAction > 0)
+            if (tempAction > 0.33)
             {
+                //Debug.Log("Move forwards");
                 verticalMove = 1;
-            }else if(tempAction < 0)
+            }else if(tempAction < -0.33)
             {
+                //Debug.Log("Move backwards");
                 verticalMove = -1;
             }
-            else
+            else // >= -0.33 && <= 0.33
             {
+                //Debug.Log("No movement forward/backwars");
                 verticalMove = 0;
             }
             
-            //Jump
+            /* Commented out as of 18.01.2020 to reduce inputs //Jump
             tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[2], -1f, 1f);
             if (tempAction > 0)
             {
@@ -93,9 +100,9 @@ private void FixedUpdate()
             else
             {
                 jumpButton = false;
-            }
+            }*/
             
-            //Crouch
+            /* Commented out as of 18.01.2020 to reduce inputs //Crouch
             tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[3], -1f, 1f);
             if (tempAction > 0)
             {
@@ -107,11 +114,11 @@ private void FixedUpdate()
             else
             {
                 crouchButton = false;
-            }
+            }*/
             
             
             //Shoot
-            tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[4], -1f, 1f);
+            tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[2], -1f, 1f);
             if (tempAction > 0)
             {
                 fireButton = true;
@@ -119,12 +126,12 @@ private void FixedUpdate()
             {
                 fireButton = false;
             }
-            else
+            else //not needed
             {
                 fireButton = false;
             }
             
-            //Aim
+            /* Commented out as of 18.01.2020 to reduce inputs //Aim
             tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[5], -1f, 1f);
             if (tempAction > 0)
             {
@@ -136,9 +143,9 @@ private void FixedUpdate()
             else
             {
                 aimButton = false;
-            }
+            }*/
             
-            //Sprint
+            /* Commented out as of 18.01.2020 to reduce inputs //Sprint
             tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[6], -1f, 1f);
             if (tempAction >= 0)
             {
@@ -150,15 +157,15 @@ private void FixedUpdate()
             else
             {
                 sprintButton = false;
-            }
+            }*/
 
             //Mouse Look Horizontal
             //mouseHorizontal = Mathf.Clamp(m_ActionBuffers.ContinuousActions[7],-1f,1f);
-            mouseHorizontal = m_ActionBuffers.ContinuousActions[7];
+            mouseHorizontal = m_ActionBuffers.ContinuousActions[3];
             
             //Mouse Look Vertical
             //mouseVertical = Mathf.Clamp(m_ActionBuffers.ContinuousActions[8],-1f,1f);
-            mouseVertical = m_ActionBuffers.ContinuousActions[8];
+            mouseVertical = m_ActionBuffers.ContinuousActions[4];
 
             //****** CONTINOUS END*****
 
@@ -349,11 +356,9 @@ private void FixedUpdate()
          Debug.Log("Branch 7: " + m_ActionBuffers.DiscreteActions[7]);
          Debug.Log("Branch 8: " + m_ActionBuffers.DiscreteActions[8]);
          */
-    }
-    private void LateUpdate()
-    {
         m_FireInputWasHeld = GetFireInputHeld();
     }
+    
 
     float GetMlAxisRaw(string axisName)
     {
@@ -587,7 +592,7 @@ private void FixedUpdate()
 
         return 0;
     }
-
+    
     float GetMouseOrStickLookAxis(string mouseInputName, string stickInputName)
     {
         if (CanProcessInput())
@@ -596,6 +601,8 @@ private void FixedUpdate()
             bool isGamepad = false;
             if (autonomus)
             {
+                //Debug.Log("Mouse X " + Input.GetAxisRaw("Mouse X"));
+                //i = Lerp(-15, 15,GetMlAxisRaw(mouseInputName));
                 i = GetMlAxisRaw(mouseInputName);
                 //Debug.Log("Mouse input in InputHandler: " + i);
             }
@@ -623,7 +630,8 @@ private void FixedUpdate()
             else
             {
                 // reduce mouse input amount to be equivalent to stick movement
-                i *= 0.01f;
+                //i *= 0.01f;
+                i *= Time.deltaTime;
 #if UNITY_WEBGL
                 // Mouse tends to be even more sensitive in WebGL due to mouse acceleration, so reduce it even more
                 i *= webglLookSensitivityMultiplier;

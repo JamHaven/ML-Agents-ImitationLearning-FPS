@@ -348,7 +348,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    void OnDie()
+    void OnDie(GameObject damageSource)
     {
         // spawn a particle system when dying
         var vfx = Instantiate(deathVFX, deathVFXSpawnPoint.position, Quaternion.identity);
