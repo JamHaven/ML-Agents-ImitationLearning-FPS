@@ -7,6 +7,8 @@ TagManager:
   - HealthSpawns
   - PlayerSpawn
   - RewardZone
+  - Enemy
+  - Pickup
   layers:
   - Default
   - TransparentFX
