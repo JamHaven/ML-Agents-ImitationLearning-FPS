@@ -53,10 +53,11 @@ private void FixedUpdate()
         {
             //Get ML-Inputs
             m_ActionBuffers = myAgent.GetStoredActionBuffers();
-            float tempAction;
+            //float tempAction;
             //**** CONTINOUS *****
             //Movement Horizontal
             //Debug.Log(m_ActionBuffers.ContinuousActions[0]);
+            /*
             tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[0], -1f, 1f);  
             if (tempAction > 0.33)
             {
@@ -118,6 +119,7 @@ private void FixedUpdate()
             
             
             //Shoot
+            /*
             tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[2], -1f, 1f);
             if (tempAction > 0)
             {
@@ -129,7 +131,7 @@ private void FixedUpdate()
             else //not needed
             {
                 fireButton = false;
-            }
+            }*/
             
             /* Commented out as of 18.01.2020 to reduce inputs //Aim
             tempAction = Mathf.Clamp(m_ActionBuffers.ContinuousActions[5], -1f, 1f);
@@ -161,18 +163,21 @@ private void FixedUpdate()
 
             //Mouse Look Horizontal
             //mouseHorizontal = Mathf.Clamp(m_ActionBuffers.ContinuousActions[7],-1f,1f);
-            mouseHorizontal = m_ActionBuffers.ContinuousActions[3];
+            
+            //mouseHorizontal = m_ActionBuffers.ContinuousActions[0];
             
             //Mouse Look Vertical
             //mouseVertical = Mathf.Clamp(m_ActionBuffers.ContinuousActions[8],-1f,1f);
-            mouseVertical = m_ActionBuffers.ContinuousActions[4];
+            
+            //mouseVertical = m_ActionBuffers.ContinuousActions[1];
 
             //****** CONTINOUS END*****
 
             //*****DISCRETE******
             /*
             //***Parse ML Inputs***
-            //Horizontal Movementx
+            */
+            //Horizontal Movement
             switch (m_ActionBuffers.DiscreteActions[0])
             {
                 case 0:
@@ -199,7 +204,7 @@ private void FixedUpdate()
                     verticalMove = -1;
                     break;
             }
-
+/*
             //Jump
             switch (m_ActionBuffers.DiscreteActions[2])
             {
@@ -222,8 +227,9 @@ private void FixedUpdate()
                     break;
             }
 
+*/
             //Shoot
-            switch (m_ActionBuffers.DiscreteActions[4])
+            switch (m_ActionBuffers.DiscreteActions[2])
             {
                 case 0:
                     fireButton = false;
@@ -231,7 +237,7 @@ private void FixedUpdate()
                 case 1:
                     fireButton = true;
                     break;
-            }
+            }/*
 
             //Aim
             switch (m_ActionBuffers.DiscreteActions[5])
@@ -254,7 +260,33 @@ private void FixedUpdate()
                     sprintButton = true;
                     break;
             }
+            */
 
+            switch (m_ActionBuffers.DiscreteActions[3])
+            {
+                case 0:
+                    mouseHorizontal = 0;
+                    break;
+                case 1:
+                    mouseHorizontal = 0.4f;
+                    break;
+                case 2:
+                    mouseHorizontal = -0.4f;
+                    break;
+            }
+            switch (m_ActionBuffers.DiscreteActions[4])
+            {
+                case 0:
+                    mouseVertical = 0;
+                    break;
+                case 1:
+                    mouseVertical = 0.2f;
+                    break;
+                case 2:
+                    mouseVertical = -0.2f;
+                    break;
+            }
+            /*
             //Mouse horizontal
             switch (m_ActionBuffers.DiscreteActions[7])
             {

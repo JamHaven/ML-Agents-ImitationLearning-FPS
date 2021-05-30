@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class Health : MonoBehaviour
@@ -82,7 +83,10 @@ public class Health : MonoBehaviour
         {
             if (onDie != null)
             {
-                m_IsDead = true;
+                if (!gameObject.CompareTag("Player"))
+                {
+                    m_IsDead = true;
+                }
                 onDie.Invoke(damageSource);
             }
         }
